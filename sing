@@ -1,0 +1,98 @@
+#!/usr/bin/python3
+
+import os
+import sys
+import pdb
+import logging
+
+from argparse import ArgumentParser
+
+from LDMS_Test import G, process_config_file, bash_items, LDMSDCluster
+
+from runtime import singularity
+
+if __name__ != "__main__":
+    raise ImportError("This is not a module.")
+
+logging.basicConfig(format="%(asctime)s.%(msecs)03d %(module)s %(levelname)s %(message)s",
+                    datefmt="%F %T", level=logging.DEBUG)
+
+logging.debug("=== start ===")
+ap = ArgumentParser("singularity utility script for ldms-test")
+ap.add_argument("--config", help="The path to the configuration file.")
+
+args = ap.parse_args()
+conf = process_config_file(args.config)
+singularity.process_config(conf)
+hosts = conf["singularity"]["hosts"]
+s = bash_items(hosts)
+
+# ssh = singularity.PtySSH("centos-7-node1")
+# ssh = singularity.ssh("centos-7-node1", interactive=True)
+
+cluster0_spec = {
+    "name": "cluster0",
+    "nodes": [
+        { "hostname": "node0" },
+        { "hostname": "node1" },
+    ],
+    "image": "ovis-centos-build",
+    #"image": "/home/narate/projects/ldms-test/ovis-centos-build",
+    # "image": "/home/narate/singularity/ovis.cont",
+    "mounts": [
+        "/home/narate:/home/narate:ro",
+        "/opt/ovis:/opt/ovis:ro",
+    ],
+    "env": {
+        "FOO": "BAR",
+    },
+}
+
+cluster1_spec = {
+    "name": "cluster1",
+    "nodes": [
+        { "hostname": "node0" },
+        { "hostname": "node1" },
+    ],
+    "image": "ovis-centos-build",
+    #"image": "/home/narate/projects/ldms-test/ovis-centos-build",
+    # "image": "/home/narate/singularity/ovis.cont",
+    "mounts": [
+        "/home/narate:/home/narate:ro",
+        "/opt/ovis:/opt/ovis:ro",
+    ],
+    "env": {
+        "FOO": "BAR",
+    },
+}
+
+# get/create test
+if True:
+    cluster0 = LDMSDCluster.get(cluster0_spec["name"],
+                                create=True,
+                                spec=cluster0_spec)
+    cluster1 = LDMSDCluster.get(cluster1_spec["name"],
+                                create=True,
+                                spec=cluster1_spec)
+    cont = cluster0.containers[0]
+    data = """
+/opt/ovis/lib
+/opt/ovis/lib64
+hahahahahahahahaha
+hohohohohohohohohoh
+"""
+
+if False:
+    cont_list = singularity.SContainer.list()
+    node0 = singularity.SContainer(instance="node0",
+            img="/home/narate/singularity/ovis.cont",
+            node_spec = { "hostname": "node0" },
+            cluster_spec = cluster_spec)
+    node1 = singularity.SContainer(instance="node1", ssh_host="centos-7-node1",
+            img="/home/narate/singularity/ovis.cont",
+            node_spec = { "hostname": "node1" },
+            cluster_spec = cluster_spec)
+
+if False:
+    a = G.ip_addr_db.alloc_addr('a', 2)
+    b = G.ip_addr_db.alloc_addr('b', 16)
