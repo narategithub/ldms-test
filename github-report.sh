@@ -49,7 +49,7 @@ export -f assert
 	INFO "cloning weekly-report from github"
 	# the current working directory is SCRIPT_DIR
 	set -e
-	git clone git@github.com:ldms-test/weekly-report
+	git clone git@github.com:narategithub/weekly-report
 }
 
 # Check if the tests have skipped due to unchanged SHA
