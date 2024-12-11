@@ -72,6 +72,8 @@ CONT_TEST_LIST=(
 	ldms_qgroup_test
 	ldmsd_qgroup_test
 
+	ldmsd_sampler_exclusive_thread_test
+
 	# old test, shall be removed when we move to 4.5 keep here for a
 	#   refernece for now
 	#
